@@ -1,13 +1,36 @@
 package view;
 
+import java.awt.HeadlessException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
 
 public class LoginUI extends javax.swing.JFrame {
 
     public LoginUI() {
         initComponents();
+        setLocationRelativeTo(null);
     }
-
+    public boolean check() {
+        if (txtTaiKhoan.getText().equals("")) {
+            JOptionPane.showMessageDialog(this, "Không được để trống Username");
+            txtTaiKhoan.requestFocus();
+            return false;
+        } else if (!txtTaiKhoan.getText().equals("KYNN")) {
+            JOptionPane.showMessageDialog(this, "Chỉ Nguyễn Ngọc Kỳ mới có thể đăng nhập");
+            txtTaiKhoan.requestFocus();
+            return false;
+        } else if (txtMatKhau.getText().equals("")) {
+            JOptionPane.showMessageDialog(this, "Không được để trống Password");
+            txtMatKhau.requestFocus();
+            return false;
+        } else {
+        }
+        return true;
+    }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -80,19 +103,26 @@ public class LoginUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        String taiKhoan = txtTaiKhoan.getText();
-        String matKhau = txtMatKhau.getText();
-        if (taiKhoan.equals("kynn")) {
-            if (matKhau.equals("1234")) {
-                new SinhVienUI().setVisible(true);
-                this.dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, "Sai Mật Khẩu");
-                return;
+        if (check()) {
+            try {
+                String url = "jdbc:sqlserver://localhost;databaseName=BTB2_SINHVIEN;user=<KynnPH27937>;password=<07082002>";
+                Connection con = DriverManager.getConnection(url);
+                String sql = "SELECT * FROM USERS WHERE USERNAME = ?";
+                PreparedStatement ps = con.prepareStatement(sql);
+                ps.setString(1, txtTaiKhoan.getText());
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) {
+                    String role = rs.getString(1);
+                    if (role.equals("KYNN")) {
+                        JOptionPane.showMessageDialog(rootPane, "Đăng nhập thành công");
+                        new SinhVienUI().setVisible(true);
+                    }
+                }
+            } catch (HeadlessException | SQLException e) {
+                e.printStackTrace();
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Sai Tài Khoản");
-            return;
+            JOptionPane.showMessageDialog(this, "Đăng nhập thất bại!");
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 

@@ -21,6 +21,7 @@ public class SinhVienUI extends javax.swing.JFrame {
         loadData(list);
         addCbbLop();
         clearForm();
+        setLocationRelativeTo(null);
     }
 
     private void clearForm() {
